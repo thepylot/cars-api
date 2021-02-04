@@ -14,7 +14,7 @@ class CarViewSet(viewsets.GenericViewSet,
     serializer_class = serializers.CarSerializer
 
     def get_queryset(self):
-        return self.queryset.order_by('-model_name')
+        return self.queryset.order_by('-id')
 
     def perform_create(self, serializer):
         serializer.save()

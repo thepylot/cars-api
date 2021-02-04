@@ -1,5 +1,5 @@
 import requests
-from django.db.models import Sum
+from django.db.models import Sum, Count
 
 from rest_framework import serializers
 from core.models import Car, Rate
@@ -23,18 +23,18 @@ class RateSerializer(serializers.ModelSerializer):
 
 
 class CarSerializer(serializers.ModelSerializer):
-    rate = serializers.SerializerMethodField('get_avg_rate')
+    rating = serializers.SerializerMethodField('get_avg_rate')
 
     class Meta:
         model = Car
-        fields = ('make_name', 'model_name', 'rate',)
+        fields = ('make_name', 'model_name', 'rating',)
         read_only_fields = ('id',)
 
     def get_avg_rate(self, car):
         """ Get average rate value for particular car object"""
         rates = Rate.objects.filter(car_id=car.id)
         if rates:
-            return round(rates.aggregate(Sum('rate'))['rate__sum'] / len(rates))
+            return round((rates.aggregate(Sum('rate'))['rate__sum'] / len(rates)) * 2) / 2
         else:
             return 0
 
@@ -58,8 +58,16 @@ class CarSerializer(serializers.ModelSerializer):
 
 
 class PopularCarSerializer(serializers.ModelSerializer):
+    number_of_rates = serializers.SerializerMethodField('get_total_rates')
 
     class Meta:
         model = Car
-        fields = ('make_name', 'model_name',)
+        fields = ('make_name', 'model_name', 'number_of_rates')
         read_only_fields = ('id',)
+
+    def get_total_rates(self, car):
+        rate_count_obj = Rate.objects.filter(car_id=car.id).values('car').annotate(rate_count=Count('car'))
+        if rate_count_obj:
+            return rate_count_obj[0]['rate_count']
+        else:
+            return 0
