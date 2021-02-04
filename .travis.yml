@@ -9,3 +9,9 @@ before_script: pip install docker-compose
 
 script:
   - docker-compose run app sh -c "python3 manage.py test"
+
+deploy:
+  provider: releases
+  edge: true
+  on:
+    tags: true
