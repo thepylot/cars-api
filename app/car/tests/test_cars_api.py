@@ -90,7 +90,7 @@ class PublicCarApiTests(TestCase):
         res = self.client.get(CAR_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data[0]['rate'], 4)
+        self.assertEqual(res.data[0]['rating'], 4)
     
     def test_car_default_rate_value(self):
         """Test default rate value for particular car"""
@@ -98,7 +98,7 @@ class PublicCarApiTests(TestCase):
         res = self.client.get(CAR_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data[0]['rate'], 0)
+        self.assertEqual(res.data[0]['rating'], 0)
 
     def test_retrieve_popular_cars(self):
         """Test retrieve popular cars based on number of rates"""
